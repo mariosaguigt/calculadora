@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Calculadora de Licencia y Certificación</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f5f7fa;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .contenedor {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #04bcbc;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      margin-top: 5px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #03958f;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    button:hover {
+      background-color: #04bcbc;
+    }
+
+    .resultado {
+      margin-top: 25px;
+      background-color: #e8f0fe;
+      border-left: 5px solid #03958f;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    .error {
+      color: red;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+
+    <!-- Imagen centrada arriba del título -->
+    <div style="text-align: center; margin-bottom: 15px;">
+      <img src="https://imagenes.gozeri.com/empresas/portada.jpg" alt="Logo" style="max-width: 120px; height: auto;">
+    </div>
+
+    <h2>Calculadora de Costos</h2>
+
+    <label for="documentos">Total de documentos de venta:</label>
+    <input type="number" id="documentos" placeholder="Ejemplo: 100" min="0">
+
+    <label for="certificados">Cantidad de documentos certificados:</label>
+    <input type="number" id="certificados" placeholder="Ejemplo: 20" min="0">
+
+    <button onclick="calcularCosto()">Calcular</button>
+
+    <div class="resultado" id="resultado"></div>
+  </div>
+
+  <script>
+    const rangos = [
+      { min: 0, max: 0, licencia: 40, certificacion: 0 },
+      { min: 1, max: 50, licencia: 50, certificacion: 50 },
+      { min: 51, max: 250, licencia: 100, certificacion: 150 },
+      { min: 251, max: 750, licencia: 300, certificacion: 200 },
+      { min: 751, max: 1500, licencia: 400, certificacion: 400 },
+      { min: 1501, max: 3500, licencia: 500, certificacion: 700 },
+      { min: 3501, max: 5000, licencia: 800, certificacion: 1000 },
+      { min: 5001, max: 10000, licencia: 1200, certificacion: 2000 },
+      { min: 10001, max: 15000, licencia: 1500, certificacion: 3000 },
+      { min: 15001, max: 25000, licencia: 2000, certificacion: 4000 },
+      { min: 25001, max: 35000, licencia: 3000, certificacion: 5000 },
+      { min: 35001, max: 50000, licencia: 5000, certificacion: 7000 },
+      { min: 50001, max: 100000, licencia: 7000, certificacion: 8000 }
+    ];
+
+    function calcularCosto() {
+      const totalDocs = parseInt(document.getElementById("documentos").value);
+      const certDocs = parseInt(document.getElementById("certificados").value);
+      const resultado = document.getElementById("resultado");
+
+      if (isNaN(totalDocs) || totalDocs < 0 || isNaN(certDocs) || certDocs < 0) {
+        resultado.innerHTML = `<div class="error">Por favor, ingresa números válidos.</div>`;
+        return;
+      }
+
+      if (certDocs > totalDocs) {
+        resultado.innerHTML = `<div class="error">Los documentos certificados no pueden ser más que el total.</div>`;
+        return;
+      }
+
+      const rangoTotal = rangos.find(r => totalDocs >= r.min && totalDocs <= r.max);
+      const rangoCert = rangos.find(r => certDocs >= r.min && certDocs <= r.max);
+
+      if (!rangoTotal) {
+        resultado.innerHTML = `<div class="error">La cantidad total de documentos está fuera de rango (hasta 100,000).</div>`;
+        return;
+      }
+
+      const costoLicencia = rangoTotal.licencia;
+      const costoCertificacion = (certDocs > 0 && rangoCert) ? rangoCert.certificacion : 0;
+      const total = costoLicencia + costoCertificacion;
+
+      resultado.innerHTML = `
+        <strong>Total a pagar:</strong> Q${total} GTQ<br>
+        <ul>
+          <li><strong>Licencia:</strong> Q${costoLicencia} GTQ por ${totalDocs} documentos</li>
+          <li><strong>Certificación:</strong> Q${costoCertificacion} GTQ por ${certDocs} certificados</li>
+        </ul>
+      `;
+    }
+  </script>
+</body>
+</html>
